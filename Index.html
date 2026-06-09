@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>John's Toolbox</title>
+
+<style>
+body {
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+  background: #f4f4f6;
+}
+
+header {
+  background: #1c1c1e;
+  color: white;
+  padding: 16px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+nav {
+  display: flex;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+nav button {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  background: none;
+}
+
+nav button.active {
+  border-bottom: 3px solid #007aff;
+  font-weight: 600;
+}
+
+.container {
+  padding: 16px;
+}
+
+.card {
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  margin-bottom: 10px;
+}
+
+button.primary {
+  background: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.small {
+  font-size: 13px;
+  color: #666;
+}
+</style>
+</head>
+
+<body>
+
+<header>John's Toolbox</header>
+
+<nav>
+  <button class="active" onclick="show('meds')">💊 Meds</button>
+  <button onclick="show('dates')">📅 Dates</button>
+</nav>
+
+<div class="container">
+
+<div id="meds">
+
+<div class="card">
+<h3>Add Medication</h3>
+
+<input id="name" placeholder="Name">
+<input id="strength" placeholder="Strength (e.g. 500 mg)">
+<input id="dose" placeholder="Dose (e.g. 1 tablet)">
+
+<select id="time">
+  <option>Morning</option>
+  <option>Noon</option>
+  <option>Evening</option>
+  <option>Bedtime</option>
+  <option>As Needed</option>
+</select>
+
+<button class="primary" onclick="add()">Add</button>
+</div>
+
+<div id="list"></div>
+
+</div>
+
+<div id="dates" style="display:none;">
+
+<div class="card">
+<h3>Days Between Dates</h3>
+
+<input type="date" id="start">
+<input type="date" id="end">
+
+<button class="primary" onclick="calc()">Calculate</button>
+
+<div id="out" class="small"></div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+let meds = JSON.parse(localStorage.getItem("meds") || "[]");
+
+function save(){
+  localStorage.setItem("meds", JSON.stringify(meds));
+}
+
+function add(){
+  meds.push({
+    name: name.value,
+    strength: strength.value,
+    dose: dose.value,
+    time: time.value
+  });
+  save();
+  render();
+}
+
+function del(i){
+  meds.splice(i,1);
+  save();
+  render();
+}
+
+function render(){
+  list.innerHTML = "";
+  meds.forEach((m,i)=>{
+    list.innerHTML += `
+      <div class="card">
+        <b>${m.name}</b><br/>
+        <div class="small">${m.strength}</div>
+        <div class="small">${m.dose}</div>
+        <div class="small">${m.time}</div>
+        <button onclick="del(${i})">Delete</button>
+      </div>
+    `;
+  });
+}
+render();
+
+function calc(){
+  let s = new Date(start.value);
+  let e = new Date(end.value);
+  let d = Math.round((e-s)/86400000);
+  out.innerHTML = d + " days";
+}
+
+function show(tab){
+  meds.style.display = tab==='meds'?'block':'none';
+  dates.style.display = tab==='dates'?'block':'none';
+}
+</script>
+
+</body>
+</html>
